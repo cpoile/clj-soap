@@ -105,8 +105,8 @@
 (defmethod soap-str->obj :boolean [soap-str argtype] (Boolean/parseBoolean soap-str))
 (defmethod soap-str->obj :default [soap-str argtype] soap-str)
 
-(defn make-client [url]
-  (doto (org.apache.axis2.client.ServiceClient. nil (java.net.URL. url) nil nil)
+(defn make-client [wsdl url]
+  (doto (org.apache.axis2.client.ServiceClient. nil (java.net.URL. wsdl) nil nil)
     (.setOptions
       (doto (org.apache.axis2.client.Options.)
         (.setTo (org.apache.axis2.addressing.EndpointReference. url))))))
@@ -136,17 +136,43 @@
     (get-result
       op (.sendReceive client (.getName op) (apply make-request op args)))))
 
-(defn client-proxy [url]
-  (let [client (make-client url)]
+(defn client-proxy [wsdl url]
+  (let [client (make-client wsdl url)]
     (->> (for [op (axis-service-operations (.getAxisService client))]
                [(keyword (axis-op-name op))
-                (fn soap-call [& args] (apply client-call client op args))])
+                (fn [& args] (apply client-call client op args))])
       (into {}))))
+
+;; scratch
+;;(def cfn (client-fn request/$SOAP_WSDL @request/$SOAP_URL))
+;;(def cpx (client-proxy request/$SOAP_WSDL @request/$SOAP_URL))
+;;(require '(biomass (request :as request)))
+;;(cfn :SearchHITs (request/get-default-params :SearchHITs))
+;; /scratch
 
 (defn client-fn
   "Make SOAP client function, which is called as: (x :someMethod arg1 arg2 ...)"
-  [url]
-  (let [px (client-proxy url)]
+  [wsdl url]
+  (let [px (client-proxy wsdl url)]
     (fn [opname & args]
       (apply (px opname) args))))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
