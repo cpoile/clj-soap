@@ -143,13 +143,6 @@
                 (fn [& args] (apply client-call client op args))])
       (into {}))))
 
-;; scratch
-;;(def cfn (client-fn request/$SOAP_WSDL @request/$SOAP_URL))
-;;(def cpx (client-proxy request/$SOAP_WSDL @request/$SOAP_URL))
-;;(require '(biomass (request :as request)))
-;;(cfn :SearchHITs (request/get-default-params :SearchHITs))
-;; /scratch
-
 (defn client-fn
   "Make SOAP client function, which is called as: (x :someMethod arg1 arg2 ...)"
   [wsdl url]
@@ -157,22 +150,13 @@
     (fn [opname & args]
       (apply (px opname) args))))
 
+;; scratch
+;;(def cfn (client-fn @request/$SOAP_WSDL @request/$SOAP_URL))
+
+;; test, see if we can get the proxy:
+;;(def cpx (client-proxy request/$SOAP_WSDL @request/$SOAP_URL))
+;;(require '(biomass (request :as request)))
+;;(cfn :SearchHITs (request/get-default-soap-params :SearchHITs))
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+;; /scratch
